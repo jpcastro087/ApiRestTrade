@@ -1,7 +1,29 @@
 micronaut:
   application:
     name: apiRestTrade
+  server:
+    cors:
+      enabled: true
+      configurations:
+        ui:
+          allowed-origins:
+            - http://127.0.0.1:4200
+            - http://localhost:4200
+            - http://localhost:8080
+            - http://192.168.100.34:4200
+datasources:
+  default:
+    url: jdbc:postgresql://192.168.100.34:5432/binance
+    driverClassName: org.postgresql.Driver
+    username: juan
+    password: '123'
 netty:
   default:
     allocator:
       max-order: 3
+jpa:
+  hibernate:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
