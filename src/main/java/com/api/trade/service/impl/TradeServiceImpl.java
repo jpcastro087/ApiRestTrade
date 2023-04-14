@@ -71,6 +71,8 @@ public class TradeServiceImpl implements TradeService {
         piso.setPorcentajedinero(String.valueOf(tradePisoRequest.getPorcentajeInvertido() / 100));
         if(piso.getNro().equals(1l)){
             piso.setMargen(String.valueOf(tradePisoRequest.getMargen() / 100));
+        }else{
+            piso.setMargen(String.valueOf(0d));
         }
         pisoRepository.save(piso);
     }
