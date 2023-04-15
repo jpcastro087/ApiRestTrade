@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import javax.validation.constraints.NotBlank;
 import java.util.List;
 
-@Controller("/")
+@Controller("/trade")
 @ExecuteOn(TaskExecutors.IO)
 @Slf4j
 public class TradeController {
@@ -41,22 +41,22 @@ public class TradeController {
     }
 
 
-    @Get(uri = "/details/trades", produces = MediaType.APPLICATION_JSON)
+    @Get(uri = "/details", produces = MediaType.APPLICATION_JSON)
     public List<TradeDetailsDTO> getDetails() {
         return tradeDetailService.getTradeDetails();
     }
 
-    @Post(uri = "/trade/venta", produces = MediaType.APPLICATION_JSON)
+    @Post(uri = "/venta", produces = MediaType.APPLICATION_JSON)
     public void vender(VentaRequest ventaRequest) {
         tradeService.vender(ventaRequest);
     }
 
-    @Put(uri = "/trade/update/piso", produces = MediaType.APPLICATION_JSON)
+    @Put(uri = "/update/piso", produces = MediaType.APPLICATION_JSON)
     public void updatePiso(TradePisoRequest tradePisoRequest) {
         tradeService.updatePiso(tradePisoRequest);
     }
 
-    @Post(uri = "/trade/create/piso", produces = MediaType.APPLICATION_JSON)
+    @Post(uri = "/create/piso", produces = MediaType.APPLICATION_JSON)
     public void createPiso(TradePisoRequest tradePisoRequest) {
         tradeService.createPiso(tradePisoRequest);
     }

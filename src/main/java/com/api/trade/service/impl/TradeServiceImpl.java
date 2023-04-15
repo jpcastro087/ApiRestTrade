@@ -1,8 +1,10 @@
 package com.api.trade.service.impl;
 
+import com.api.trade.domain.CurrencyToTrack;
 import com.api.trade.domain.Piso;
 import com.api.trade.domain.Trade;
 import com.api.trade.dto.TradeDTO;
+import com.api.trade.repository.CurrencyToTrackRepository;
 import com.api.trade.repository.PisoRepository;
 import com.api.trade.repository.TradeRepository;
 import com.api.trade.request.TradePisoRequest;
@@ -21,6 +23,8 @@ public class TradeServiceImpl implements TradeService {
     private TradeRepository tradeRepository;
     @Inject
     private PisoRepository pisoRepository;
+    @Inject
+    private CurrencyToTrackRepository currencyToTrackRepository;
 
     @Override
     public TradeDTO getTrade(String pair) {
@@ -54,7 +58,7 @@ public class TradeServiceImpl implements TradeService {
         piso.setTakeprofit(String.valueOf(tradePisoRequest.getTakeProfit() / 100));
         piso.setPorcentajebajada(String.valueOf(tradePisoRequest.getPorcentajeBajada() / 100));
         piso.setPorcentajedinero(String.valueOf(tradePisoRequest.getPorcentajeInvertido() / 100));
-        if(piso.getNro().equals(1l)){
+        if (piso.getNro().equals(1l)) {
             piso.setMargen(String.valueOf(tradePisoRequest.getMargen() / 100));
         }
 
@@ -69,11 +73,21 @@ public class TradeServiceImpl implements TradeService {
         piso.setTakeprofit(String.valueOf(tradePisoRequest.getTakeProfit() / 100));
         piso.setPorcentajebajada(String.valueOf(tradePisoRequest.getPorcentajeBajada() / 100));
         piso.setPorcentajedinero(String.valueOf(tradePisoRequest.getPorcentajeInvertido() / 100));
-        if(piso.getNro().equals(1l)){
+        if (piso.getNro().equals(1l)) {
             piso.setMargen(String.valueOf(tradePisoRequest.getMargen() / 100));
-        }else{
+        } else {
             piso.setMargen(String.valueOf(0d));
         }
+
+        String moneda = removeFiat(tradePisoRequest.getMoneda());
+        Optional<String> monedaObtenida = currencyToTrackRepository.getByMoneda(moneda);
+
+        if (!monedaObtenida.isPresent()) {
+            CurrencyToTrack currencyToTrack = new CurrencyToTrack();
+            currencyToTrack.setMoneda(moneda);
+            currencyToTrackRepository.save(currencyToTrack);
+        }
+
         pisoRepository.save(piso);
     }
 
@@ -89,6 +103,11 @@ public class TradeServiceImpl implements TradeService {
         tradeDTO.setOpentime(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date(openTime)));
         tradeDTO.setCurrency(trade.getCurrency());
         return tradeDTO;
+    }
+
+    private String removeFiat(String moneda) {
+        String resultado = moneda.substring(0, moneda.length() - 4);
+        return resultado;
     }
 
 
