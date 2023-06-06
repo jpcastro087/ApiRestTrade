@@ -12,6 +12,8 @@ import com.api.trade.request.VentaRequest;
 import com.api.trade.service.TradeService;
 import jakarta.inject.Inject;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -79,8 +81,8 @@ public class TradeServiceImpl implements TradeService {
             piso.setMargen(String.valueOf(0d));
         }
 
-        String moneda = removeFiat(tradePisoRequest.getMoneda());
-        Optional<String> monedaObtenida = currencyToTrackRepository.getByMoneda(moneda);
+        String moneda = getStringRemoveFiat(tradePisoRequest.getMoneda());
+        Optional<CurrencyToTrack> monedaObtenida = currencyToTrackRepository.getByMoneda(moneda);
 
         if (!monedaObtenida.isPresent()) {
             CurrencyToTrack currencyToTrack = new CurrencyToTrack();
@@ -89,6 +91,45 @@ public class TradeServiceImpl implements TradeService {
         }
 
         pisoRepository.save(piso);
+    }
+
+    @Override
+    public void deletePiso(TradePisoRequest tradePisoRequest) {
+        Long nroPiso = tradePisoRequest.getNro();
+        String moneda = tradePisoRequest.getMoneda();
+
+        Optional<BigInteger> optionalPisoMaximo = pisoRepository.getPisoMaximoByMoneda(moneda);
+
+        if(!optionalPisoMaximo.isPresent()) {return;}
+        Long a = optionalPisoMaximo.get().longValue();
+        if(!a.equals(nroPiso)) return;
+
+        //si el valor nroPiso no es igual al maximo no elimina nada.
+
+
+        Optional<List<Trade>> trades = tradeRepository.getByPisoAndMoneda(nroPiso, moneda);
+
+        if(trades.isEmpty()){
+            Piso piso = new Piso();
+            piso.setId(tradePisoRequest.getIdPiso());
+            pisoRepository.delete(piso);
+        }
+
+        Optional<List<Piso>> pisos = pisoRepository.getByPair(moneda);
+
+        if(pisos.isEmpty()){
+            String currency = getStringRemoveFiat(moneda);
+            Optional<CurrencyToTrack> optionalCurrencyToTrack = currencyToTrackRepository.getByMoneda(currency);
+            CurrencyToTrack currencyToTrack = optionalCurrencyToTrack.get();
+            currencyToTrackRepository.delete(currencyToTrack);
+        }
+
+
+    }
+
+    @Override
+    public List<Trade> getPisoAndMoneda(Long piso, String moneda) {
+        return null;
     }
 
 
@@ -105,7 +146,7 @@ public class TradeServiceImpl implements TradeService {
         return tradeDTO;
     }
 
-    private String removeFiat(String moneda) {
+    private String getStringRemoveFiat(String moneda) {
         String resultado = moneda.substring(0, moneda.length() - 4);
         return resultado;
     }

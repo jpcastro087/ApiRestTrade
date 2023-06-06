@@ -14,4 +14,6 @@ public interface TradeService {
     void vender(VentaRequest ventaRequest);
     void updatePiso(TradePisoRequest tradePisoRequest);
     void createPiso(TradePisoRequest tradePisoRequest);
+    void deletePiso(TradePisoRequest tradePisoRequest);
+    List<Trade> getPisoAndMoneda(Long piso, String moneda);
 }

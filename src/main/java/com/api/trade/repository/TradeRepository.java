@@ -7,6 +7,7 @@ import io.micronaut.data.repository.CrudRepository;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TradeRepository extends CrudRepository<Trade,Long> {
@@ -22,6 +23,9 @@ public interface TradeRepository extends CrudRepository<Trade,Long> {
 
     @Query(value = "SELECT getText()", nativeQuery = true)
     String getTradesPisosJSON();
+
+    @Query(value = "select * from trade t where t.piso = :piso and t.currency = :moneda", nativeQuery = true)
+    Optional<List<Trade>> getByPisoAndMoneda(Long piso, String moneda);
 
 
 }

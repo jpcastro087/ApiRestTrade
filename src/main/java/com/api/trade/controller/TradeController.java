@@ -7,10 +7,7 @@ import com.api.trade.request.VentaRequest;
 import com.api.trade.service.TradeDetailService;
 import com.api.trade.service.TradeService;
 import io.micronaut.http.MediaType;
-import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.Get;
-import io.micronaut.http.annotation.Post;
-import io.micronaut.http.annotation.Put;
+import io.micronaut.http.annotation.*;
 import io.micronaut.scheduling.TaskExecutors;
 import io.micronaut.scheduling.annotation.ExecuteOn;
 import jakarta.inject.Inject;
@@ -59,6 +56,11 @@ public class TradeController {
     @Post(uri = "/create/piso", produces = MediaType.APPLICATION_JSON)
     public void createPiso(TradePisoRequest tradePisoRequest) {
         tradeService.createPiso(tradePisoRequest);
+    }
+
+    @Post(uri = "/delete/piso", produces = MediaType.APPLICATION_JSON)
+    public void delete(TradePisoRequest tradePisoRequest) {
+        tradeService.deletePiso(tradePisoRequest);
     }
 
 }

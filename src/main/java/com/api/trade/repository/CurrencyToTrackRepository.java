@@ -11,7 +11,7 @@ import java.util.Optional;
 @Repository
 public interface CurrencyToTrackRepository extends CrudRepository<CurrencyToTrack, Long> {
 
-    @Query(value = "select moneda from currenciestotrack where moneda = :moneda", nativeQuery = true)
-    Optional<String> getByMoneda(String moneda);
+    @Query(value = "select * from currenciestotrack where moneda = :moneda", nativeQuery = true)
+    Optional<CurrencyToTrack> getByMoneda(String moneda);
 
 }
