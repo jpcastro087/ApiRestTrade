@@ -5,6 +5,7 @@ import io.micronaut.data.annotation.Query;
 import io.micronaut.data.annotation.Repository;
 import io.micronaut.data.repository.CrudRepository;
 
+import javax.transaction.Transactional;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +27,10 @@ public interface TradeRepository extends CrudRepository<Trade,Long> {
 
     @Query(value = "select * from trade t where t.piso = :piso and t.currency = :moneda", nativeQuery = true)
     Optional<List<Trade>> getByPisoAndMoneda(Long piso, String moneda);
+
+    @Transactional
+    @Query("DELETE FROM Trade t WHERE t.currency = :currency")
+    void deleteByPair(String currency);
 
 
 }

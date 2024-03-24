@@ -25,7 +25,6 @@ public class TradeDetailServiceImpl implements TradeDetailService {
         String tradesPisosJson = tradeRepository.getTradesPisosJSON();
         JsonArray jsonArray = new JsonParser().parse(tradesPisosJson).getAsJsonArray();
         List<TradeDetailsDTO> tradeDetailsDTOs = new ArrayList<TradeDetailsDTO>();
-        DecimalFormat df = new DecimalFormat("0.00");
 
         for (int i = 0; i < jsonArray.size(); i++) {
             TradeDetailsDTO tradeDetailsDTO = new TradeDetailsDTO();
@@ -43,9 +42,9 @@ public class TradeDetailServiceImpl implements TradeDetailService {
             double porcentajeMargen = margen * 100;
             Long piso = jsonObject.get("nro").getAsLong();
 
-            tradeDetailsDTO.setInvertido(Double.valueOf(df.format(porcentajeInvertido)));
-            tradeDetailsDTO.setPorcentajeEntrada(Double.valueOf(df.format(porcentajeEntradaContraPisoAnterior)));
-            tradeDetailsDTO.setTakeProfit(Double.valueOf(df.format(takeProfit)));
+            tradeDetailsDTO.setInvertido(Double.valueOf(porcentajeInvertido));
+            tradeDetailsDTO.setPorcentajeEntrada(Double.valueOf(porcentajeEntradaContraPisoAnterior));
+            tradeDetailsDTO.setTakeProfit(Double.valueOf(takeProfit));
             tradeDetailsDTO.setMoneda(moneda);
             tradeDetailsDTO.setIdPiso(idPiso);
             tradeDetailsDTO.setPiso(piso.longValue());
@@ -76,10 +75,10 @@ public class TradeDetailServiceImpl implements TradeDetailService {
                 double porcentajeHigh = Double.valueOf((high - entryPrice) / entryPrice * 100.0D);
                 double porcentajeLow = Double.valueOf((low - entryPrice) / entryPrice * 100.0D);
 
-                tradeDetailsDTO.setPorcentajeActual(Double.valueOf(df.format(porcentajeActual)));
-                tradeDetailsDTO.setPorcentajeMaximo(Double.valueOf(df.format(porcentajeHigh)));
-                tradeDetailsDTO.setPorcentajeMinimo(Double.valueOf(df.format(porcentajeLow)));
-                tradeDetailsDTO.setPrecioEntrada(Double.valueOf(df.format(entryPrice)));
+                tradeDetailsDTO.setPorcentajeActual(Double.valueOf(porcentajeActual));
+                tradeDetailsDTO.setPorcentajeMaximo(Double.valueOf(porcentajeHigh));
+                tradeDetailsDTO.setPorcentajeMinimo(Double.valueOf(porcentajeLow));
+                tradeDetailsDTO.setPrecioEntrada(Double.valueOf(entryPrice));
                 tradeDetailsDTO.setFecha(fecha);
             }
             tradeDetailsDTOs.add(tradeDetailsDTO);

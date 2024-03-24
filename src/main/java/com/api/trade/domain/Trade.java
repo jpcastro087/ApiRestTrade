@@ -13,13 +13,16 @@ import javax.persistence.*;
 public class Trade {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id",unique=true, nullable = false)
     private Long id;
 
     @Column(name = "opentime", nullable = false)
-    private String opentime;
+    private Long opentime;
 
     @Column(name = "closetime", nullable = true)
-    private String closetime;
+    private Long closetime;
 
     @Column(name = "entryprice", nullable = false)
     private String entryprice;
@@ -41,4 +44,10 @@ public class Trade {
 
     @Column(name = "high", nullable = true)
     private String high;
+
+    @Column(name = "low", nullable = true)
+    private String low;
+
+    @Column(name = "piso", nullable = true)
+    private Long piso;
 }

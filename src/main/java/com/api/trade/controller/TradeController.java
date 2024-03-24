@@ -2,8 +2,10 @@ package com.api.trade.controller;
 
 import com.api.trade.dto.TradeDTO;
 import com.api.trade.dto.TradeDetailsDTO;
+import com.api.trade.request.PisosGenerericosRequest;
 import com.api.trade.request.TradePisoRequest;
 import com.api.trade.request.VentaRequest;
+import com.api.trade.service.PisoService;
 import com.api.trade.service.TradeDetailService;
 import com.api.trade.service.TradeService;
 import io.micronaut.http.MediaType;
@@ -23,6 +25,8 @@ public class TradeController {
 
     @Inject
     private TradeService tradeService;
+    @Inject
+    private PisoService pisoService;
     @Inject
     private TradeDetailService tradeDetailService;
 
@@ -50,17 +54,23 @@ public class TradeController {
 
     @Put(uri = "/update/piso", produces = MediaType.APPLICATION_JSON)
     public void updatePiso(TradePisoRequest tradePisoRequest) {
-        tradeService.updatePiso(tradePisoRequest);
+        pisoService.updatePiso(tradePisoRequest);
     }
 
     @Post(uri = "/create/piso", produces = MediaType.APPLICATION_JSON)
     public void createPiso(TradePisoRequest tradePisoRequest) {
-        tradeService.createPiso(tradePisoRequest);
+        pisoService.createPiso(tradePisoRequest);
     }
 
     @Post(uri = "/delete/piso", produces = MediaType.APPLICATION_JSON)
     public void delete(TradePisoRequest tradePisoRequest) {
-        tradeService.deletePiso(tradePisoRequest);
+        pisoService.deletePiso(tradePisoRequest);
+    }
+
+
+    @Post(uri = "/create/pisosgenericos", produces = MediaType.APPLICATION_JSON)
+    public void createPisosGenericos(PisosGenerericosRequest pisosGenerericosRequest) {
+        tradeService.createTradesGenericos(pisosGenerericosRequest);
     }
 
 }

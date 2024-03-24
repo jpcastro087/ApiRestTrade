@@ -6,6 +6,7 @@ import io.micronaut.data.annotation.Query;
 import io.micronaut.data.annotation.Repository;
 import io.micronaut.data.repository.CrudRepository;
 
+import javax.transaction.Transactional;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
@@ -19,5 +20,9 @@ public interface PisoRepository extends CrudRepository<Piso, Long> {
 
     @Query(value = "select * from pisos p where p.pair = :pair", nativeQuery = true)
     Optional<List<Piso>> getByPair(String pair);
+
+    @Transactional
+    @Query("DELETE FROM Piso p WHERE p.pair = :pair")
+    void deleteByPair(String pair);
 
 }
