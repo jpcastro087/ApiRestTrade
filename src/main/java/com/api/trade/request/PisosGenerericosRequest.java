@@ -13,13 +13,8 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Builder
 public class PisosGenerericosRequest {
-    private String precioDesde;
-    private String precioHasta;
-    private String precioActual;
-    private String precioActualMonedaFiat;
-    private String precioMonedaContraria;
-    private String cantidadTotalParaRepartirEntrePisos;
-    private int cantidadPisos;
-    private String par;
-    private double margen;
+    private String cantidadPisos;
+    private String coin;
+    private String fiat;
+
 }

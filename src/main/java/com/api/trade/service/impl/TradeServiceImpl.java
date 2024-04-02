@@ -12,12 +12,14 @@ import com.api.trade.request.VentaRequest;
 import com.api.trade.service.TradeService;
 import jakarta.inject.Inject;
 import modes.Live;
+import trading.Currency;
+import trading.CurrentAPI;
 
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public class TradeServiceImpl implements TradeService {
     @Inject
@@ -63,19 +65,33 @@ public class TradeServiceImpl implements TradeService {
     @Override
     public void createTradesGenericos(PisosGenerericosRequest pisosGenerericosRequest) {
 
+        String coin = pisosGenerericosRequest.getCoin();
+        String fiat = pisosGenerericosRequest.getFiat();
+        String par =  coin + fiat ;
+        String cantPisos = pisosGenerericosRequest.getCantidadPisos();
+
         //Eliminar todos los pisos por par
-        pisoRepository.deleteByPair(pisosGenerericosRequest.getPar());
+        pisoRepository.deleteByPair(par);
 
         //Eliminar todos los trades por par
-        tradeRepository.deleteByPair(pisosGenerericosRequest.getPar());
+        tradeRepository.deleteByPair(par);
 
-        List<PisoGenericoDTO> pisosGenericos = this.getPisosGenericos(pisosGenerericosRequest);
+
+
+        Live.init("Ww55fRIKJl1ELBBV2Na41aW13GV2AHJeHuRXvlCbqFW1svujamhPlYNfSbvyguWz",
+                "qb5QRGOmpvxPFiGBpAzkunQmMZ9u632Q5COoM0BcE6tcgcBnJd4yruhCzS1I5kGk");
 
         //Guardar todos los pisos
-        List<Piso> pisos = this.parsePisos(pisosGenericos);
-        pisoRepository.saveAll(pisos);
+        List<Piso> pisos = null;
+        List<Trade> trades = null;
+        try {
+            pisos = Live.getPisos(coin,fiat,cantPisos);
+            trades = Live.getTrades(coin,fiat,cantPisos);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
-        List<Trade> trades = this.parseTrades(pisosGenericos);
+        pisoRepository.saveAll(pisos);
         tradeRepository.saveAll(trades);
 
         //Guardar todos los trades
@@ -96,77 +112,6 @@ public class TradeServiceImpl implements TradeService {
     }
 
 
-    private List<PisoGenericoDTO> getPisosGenericos(PisosGenerericosRequest pisosGenerericosRequest) {
-        BigDecimal precioDesde = new BigDecimal(pisosGenerericosRequest.getPrecioDesde());
-        BigDecimal precioHasta = new BigDecimal(pisosGenerericosRequest.getPrecioHasta());
-        int cantidadPisos = pisosGenerericosRequest.getCantidadPisos();
-        BigDecimal cantidadTotalParaRepartirEntrePisos = new BigDecimal(pisosGenerericosRequest.getCantidadTotalParaRepartirEntrePisos());
-        BigDecimal precioActual = new BigDecimal(pisosGenerericosRequest.getPrecioActual());
-        BigDecimal amountTotal = cantidadTotalParaRepartirEntrePisos.divide(precioActual, 10, BigDecimal.ROUND_HALF_UP).setScale(10, BigDecimal.ROUND_HALF_UP);
-        BigDecimal amountTotalVariable = new BigDecimal(amountTotal.toString());
-        BigDecimal precioActualMonedaFiat = new BigDecimal(pisosGenerericosRequest.getPrecioActualMonedaFiat());
-
-        List<PisoGenericoDTO> pisos = new ArrayList<>();
-
-        BigDecimal porcentajeBajadaPrecioDesdeHasta = precioHasta.subtract(precioDesde).divide(precioHasta, 5, BigDecimal.ROUND_HALF_UP).multiply(BigDecimal.valueOf(100));
-        BigDecimal porcentajeSubidaPrecioDesdeHasta = precioHasta.subtract(precioDesde).divide(precioDesde, 5, BigDecimal.ROUND_HALF_UP).multiply(BigDecimal.valueOf(100));
-        BigDecimal porcentajeBajadaPorCadaPiso = porcentajeBajadaPrecioDesdeHasta.divide(BigDecimal.valueOf(cantidadPisos), 5, BigDecimal.ROUND_HALF_UP);
-        BigDecimal porcentajeTakeProfitPorCadaPiso = porcentajeSubidaPrecioDesdeHasta.divide(BigDecimal.valueOf(cantidadPisos), 5, BigDecimal.ROUND_HALF_UP);
-        BigDecimal amountPorPiso = cantidadTotalParaRepartirEntrePisos.divide(BigDecimal.valueOf(cantidadPisos), 5, BigDecimal.ROUND_HALF_UP);
-        BigDecimal porcentajeInvertidoPorPiso = new BigDecimal("0");
-
-
-
-        BigDecimal precioEntrada = precioHasta;
-
-
-        for (int i = 1; i <= cantidadPisos; i++) {
-            BigDecimal porcentaje = (i == 1) ? BigDecimal.ZERO : porcentajeBajadaPorCadaPiso.negate();
-            BigDecimal bajada = precioEntrada.multiply(porcentaje.abs().divide(BigDecimal.valueOf(100), 10, BigDecimal.ROUND_HALF_UP)).setScale(10, BigDecimal.ROUND_HALF_UP);
-            precioEntrada = precioEntrada.subtract(bajada).setScale(10, BigDecimal.ROUND_UP);
-
-            BigDecimal amount = new BigDecimal("0");
-            BigDecimal total = amount.multiply(precioEntrada);
-            if (precioActualMonedaFiat.equals(new BigDecimal("1"))) {
-                amount = amountPorPiso.divide(precioEntrada, RoundingMode.HALF_UP);
-                porcentajeInvertidoPorPiso = amount.divide(amountTotalVariable, 10, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
-                total = amount.multiply(precioEntrada);
-            } else {
-                amount = amountPorPiso;
-                BigDecimal precioMonedaContraria = new BigDecimal(pisosGenerericosRequest.getPrecioMonedaContraria());
-                total = amount.multiply(precioMonedaContraria);
-                porcentajeInvertidoPorPiso = amount.divide(cantidadTotalParaRepartirEntrePisos,10, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
-            }
-
-
-
-
-
-
-
-            PisoGenericoDTO pisoGenericoDTO = new PisoGenericoDTO();
-            pisoGenericoDTO.setNroPiso(Long.valueOf(i));
-            pisoGenericoDTO.setPorcentajeBajada(porcentaje.toString());
-            pisoGenericoDTO.setPrecioEntrada(precioEntrada.toString());
-            pisoGenericoDTO.setPorcentajeTakeProfit(porcentajeTakeProfitPorCadaPiso.toString());
-            pisoGenericoDTO.setAmount(amount.toString());
-            pisoGenericoDTO.setPorcentajeInvertido(porcentajeInvertidoPorPiso.toString());
-            pisoGenericoDTO.setPair(pisosGenerericosRequest.getPar());
-            pisoGenericoDTO.setPrecioActual(precioActual.toString());
-            pisoGenericoDTO.setTotalDolares(total.toString());
-
-            if (pisoGenericoDTO.getNroPiso() == 1) {
-                pisoGenericoDTO.setMargen(String.valueOf(pisosGenerericosRequest.getMargen() / 100));
-            } else {
-                pisoGenericoDTO.setMargen(String.valueOf(0d));
-            }
-            pisos.add(pisoGenericoDTO);
-            amountTotalVariable = amountTotalVariable.subtract(amount);
-        }
-
-
-        return pisos;
-    }
 
 
     private List<Piso> parsePisos(List<PisoGenericoDTO> pisoGenericoDTOS) {
