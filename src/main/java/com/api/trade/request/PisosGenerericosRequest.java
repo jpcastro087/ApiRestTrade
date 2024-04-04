@@ -16,5 +16,7 @@ public class PisosGenerericosRequest {
     private String cantidadPisos;
     private String coin;
     private String fiat;
+    private String intervalo;
+    private String cantidadPeriodos;
 
 }

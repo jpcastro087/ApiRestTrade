@@ -10,6 +10,8 @@ curl 'http://localhost:8080/trade/create/pisosgenericos' \
   --data '{
     "cantidadPisos": "5",
     "coin": "RNDR",
-    "fiat": "USDT"
+    "fiat": "USDT",
+    "intervalo":"1h",
+    "cantidadPeriodos":"48"
   }' \
   --compressed

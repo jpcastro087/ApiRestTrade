@@ -38,6 +38,10 @@ dependencies {
         implementation files(jar)
     }
 
+    implementation fileTree(dir: 'libs/SoporteResistencia_lib', include: ['*.jar']).each { File jar ->
+        implementation files(jar)
+    }
+
 
 
 

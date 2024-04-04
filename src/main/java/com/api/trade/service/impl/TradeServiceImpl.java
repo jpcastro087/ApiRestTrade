@@ -14,6 +14,7 @@ import jakarta.inject.Inject;
 import modes.Live;
 import trading.Currency;
 import trading.CurrentAPI;
+import com.binance.api.client.domain.market.CandlestickInterval;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -69,6 +70,8 @@ public class TradeServiceImpl implements TradeService {
         String fiat = pisosGenerericosRequest.getFiat();
         String par =  coin + fiat ;
         String cantPisos = pisosGenerericosRequest.getCantidadPisos();
+        String intervalo = pisosGenerericosRequest.getIntervalo();
+        String periodos = pisosGenerericosRequest.getCantidadPeriodos();
 
         //Eliminar todos los pisos por par
         pisoRepository.deleteByPair(par);
@@ -85,8 +88,8 @@ public class TradeServiceImpl implements TradeService {
         List<Piso> pisos = null;
         List<Trade> trades = null;
         try {
-            pisos = Live.getPisos(coin,fiat,cantPisos);
-            trades = Live.getTrades(coin,fiat,cantPisos);
+            pisos = Live.getPisos(coin,fiat,cantPisos, intervalo, periodos);
+            trades = Live.getTrades(coin,fiat,cantPisos, intervalo, periodos);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -96,6 +99,9 @@ public class TradeServiceImpl implements TradeService {
 
         //Guardar todos los trades
     }
+
+
+
 
 
     private TradeDTO getDTO(Trade trade) {
