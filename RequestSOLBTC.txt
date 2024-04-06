@@ -8,10 +8,10 @@ curl 'http://localhost:8080/trade/create/pisosgenericos' \
   -H 'Referer: http://localhost:4200/' \
   -H 'User-Agent: Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Mobile Safari/537.36' \
   --data '{
-    "cantidadPisos": "5",
+    "cantidadPisos": "8",
     "coin": "RNDR",
     "fiat": "USDT",
-    "intervalo":"1h",
-    "cantidadPeriodos":"48"
+    "intervalo":"4h",
+    "cantidadPeriodos":"10"
   }' \
   --compressed
