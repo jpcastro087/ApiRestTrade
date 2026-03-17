@@ -80,10 +80,6 @@ public class TradeServiceImpl implements TradeService {
         tradeRepository.deleteByPair(par);
 
 
-
-        Live.init("Ww55fRIKJl1ELBBV2Na41aW13GV2AHJeHuRXvlCbqFW1svujamhPlYNfSbvyguWz",
-                "qb5QRGOmpvxPFiGBpAzkunQmMZ9u632Q5COoM0BcE6tcgcBnJd4yruhCzS1I5kGk");
-
         //Guardar todos los pisos
         List<Piso> pisos = null;
         List<Trade> trades = null;
